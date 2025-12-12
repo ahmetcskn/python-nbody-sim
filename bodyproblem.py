@@ -8,11 +8,12 @@ G = 1.0
 
 
 class Body:
-    def __init__(self, mass, radius, position, velocity):
+    def __init__(self, mass, radius, position, velocity, color):
         self.mass = mass
         self.radius = radius
         self.position = np.array(position, dtype=float)
         self.velocity = np.array(velocity, dtype=float)
+        self.color = color
 
     def force_from(self, other):
         r = other.position - self.position
@@ -36,6 +37,9 @@ def orbital_velocity(center, orbiting, clockwise=True):
 
 
 def update(frame, bodies, scat, dt):
+    for body in bodies:
+        if np.allclose(body.position, [0, 0]):
+            body.velocity = np.zeros(2)
     forces = []
     for i, b in enumerate(bodies):
         total_f = np.zeros(2)
@@ -56,23 +60,27 @@ def update(frame, bodies, scat, dt):
 
 
 if __name__ == "__main__":
-    sun = Body(700, 0.5, [0, 0], [0, 0])
-    earth = Body(10, 0.05, [1.5, 0], [0, 0])
-    moon = Body(5, 0.02, [1.4, 0], [0, 0])
+    sun = Body(2000, 5, [0, 0], [0, 0], "yellow")
+    earth = Body(10, 0.05, [1.5, 0], [0, 0], "blue")
+    moon = Body(5, 0.02, [1.4, 0], [0, 0], "gray")
+    mars = Body(15, 0.03, [2.5, 0], [0, 0], "orange")
 
     # Otomatik yörünge hızlarını ata
+    # ilk hizlari
     earth.velocity = orbital_velocity(sun, earth)
     moon.velocity = earth.velocity + orbital_velocity(earth, moon)
+    mars.velocity = mars.velocity + orbital_velocity(sun, mars)
 
-    bodies = [sun, earth, moon]
+    bodies = [sun, earth, moon, mars]
 
-    dt = 0.002
+    dt = 0.001
 
     fig, ax = plt.subplots()
     scat = ax.scatter(
         [b.position[0] for b in bodies],
         [b.position[1] for b in bodies],
         s=[2000 * b.radius for b in bodies],
+        c=[b.color for b in bodies],
     )
 
     ax.set_xlim(-3, 3)
