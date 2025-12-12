@@ -44,21 +44,21 @@ def update(frame, bodies, scat, dt):
                 total_f += b.force_from(other)
         forces.append(total_f)
 
-    for i, b in enumerate(bodies):
-        b.velocity += forces[i] / b.mass * dt
-        b.position += b.velocity * dt
+    for i, body in enumerate(bodies):
+        body.velocity += forces[i] / body.mass * dt
+        body.position += body.velocity * dt
 
-    xs = [b.position[0] for b in bodies]
-    ys = [b.position[1] for b in bodies]
+    xs = [body.position[0] for body in bodies]
+    ys = [body.position[1] for body in bodies]
     scat.set_offsets(np.c_[xs, ys])
 
     return (scat,)
 
 
 if __name__ == "__main__":
-    sun = Body(101, 0.5, [0, 0], [0, 0])
-    earth = Body(0.1, 0.05, [1.5, 0], [0, 0])
-    moon = Body(0.01, 0.02, [1.4, 0], [0, 0])
+    sun = Body(700, 0.5, [0, 0], [0, 0])
+    earth = Body(10, 0.05, [1.5, 0], [0, 0])
+    moon = Body(5, 0.02, [1.4, 0], [0, 0])
 
     # Otomatik yörünge hızlarını ata
     earth.velocity = orbital_velocity(sun, earth)
