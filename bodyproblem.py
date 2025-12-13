@@ -68,14 +68,19 @@ if __name__ == "__main__":
     # Otomatik yörünge hızlarını ata
     # ilk hizlari
     earth.velocity = orbital_velocity(sun, earth)
-    moon.velocity = earth.velocity + orbital_velocity(earth, moon)
-    mars.velocity = mars.velocity + orbital_velocity(sun, mars)
+    moon.velocity = (
+        earth.velocity + orbital_velocity(earth, moon) + orbital_velocity(earth, mars)
+    )
+    mars.velocity = (
+        mars.velocity + orbital_velocity(sun, mars) + orbital_velocity(earth, mars)
+    )
 
     bodies = [sun, earth, moon, mars]
 
     dt = 0.001
 
-    fig, ax = plt.subplots()
+    # fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(10, 10))
     scat = ax.scatter(
         [b.position[0] for b in bodies],
         [b.position[1] for b in bodies],
@@ -83,9 +88,11 @@ if __name__ == "__main__":
         c=[b.color for b in bodies],
     )
 
-    ax.set_xlim(-3, 3)
-    ax.set_ylim(-3, 3)
+    ax.set_xlim(-6, 6)
+    ax.set_ylim(-6, 6)
     ax.set_aspect("equal")
-
+    ax.axis("off")  # Eksenlerin tamamını (çizgiler, sayılar, tick'ler) kapatır
+    fig.patch.set_facecolor("black")  # Arka planı siyah yap (uzay hissi için)
+    ax.set_facecolor("black")  # Grafik alanını da siyah yap
     ani = FuncAnimation(fig, update, fargs=(bodies, scat, dt), interval=10)
     plt.show()
